@@ -1,53 +1,37 @@
 import { createRef, useState } from "react";
 import FullCalendar from "@fullcalendar/react";
 import { format } from "date-fns";
+import { MyEventsType, SelectEventType } from "../types/hooks";
+import { EventClickArg } from "@fullcalendar/core/index.js";
+import { createSchedule } from "../api/schedules";
 
-type MyEventsType = {
-  id: string;
-  title: string;
-  start: Date | null;
-  end: Date | null;
-};
 
-type SelectEventType = {
-  start: Date;
-  end: Date;
-  startStr: string;
-  endStr: string;
-  allDay: boolean;
-  jsEvent: MouseEvent | null;
-  view: unknown;
-};
-
-type EventClickArg = {
-  el: HTMLElement;
-  event: MyEventsType;
-  jsEvent: MouseEvent;
-  view: unknown;
-};
 
 export const useCalendarFunc = () => {
   const ref = createRef<FullCalendar>();
+  const [eventsId, setEventsId] = useState<string>("");
   const [eventsTitle, setEventsTitle] = useState<string>("");
+  const [allDay, setAllDay] = useState<boolean>(false);
   const [eventsStartDate, setEventsStartDate] = useState<Date>();
   const [eventsStartTime, setEventsStartTime] = useState<string>("");
   const [eventsEndDate, setEventsEndDate] = useState<Date>();
   const [eventsEndTime, setEventsEndTime] = useState<string>("");
   const [myEvents, setMyEvents] = useState<MyEventsType[]>([]);
   const [isOpenDialog, setIsOpenDialog] = useState<boolean>(false);
+  const [isOpenSheet, setIsOpenSheet] = useState<boolean>(false);
 
+  //追加済みのイベントをクリックした時
   const handleClick = (addedInfo: EventClickArg) => {
-    const { title, start, end } = myEvents[Number(addedInfo.event.id)];
-    if (!start || !end) {
-      return;
-    }
+    const { id, title, start, end } = addedInfo.event;
+    setEventsId(id);
     setEventsTitle(title);
-    setEventsStartDate(start);
-    setEventsStartTime(format(start, "HH:mm"));
-    setEventsEndDate(end);
-    setEventsEndTime(format(end, "HH:mm"));
+    setEventsStartDate(start!);
+    setEventsStartTime(format(start!, "HH:mm"));
+    setEventsEndDate(end!);
+    setEventsEndTime(format(end!, "HH:mm"));
     setIsOpenDialog(true);
   };
+
   const formatCaption = (date: Date | undefined) => {
     if (!date) {
       return;
@@ -57,6 +41,7 @@ export const useCalendarFunc = () => {
     return `${day}(${dayArr[date.getDay()]})`;
   };
 
+  //カレンダーの空欄をクリックした時
   const handleSelect = (selectedInfo: SelectEventType) => {
     const start_date = new Date(selectedInfo.start);
     const start_time = format(start_date, "HH:mm");
@@ -67,9 +52,9 @@ export const useCalendarFunc = () => {
     setEventsStartTime(start_time);
     setEventsEndDate(end_date);
     setEventsEndTime(end_time);
-    setIsOpenDialog(true);
+    setIsOpenSheet(true);
   };
-  const onAddEvent = () => {
+  const onAddEvent = async () => {
     if (!ref.current) {
       return;
     }
@@ -88,18 +73,25 @@ export const useCalendarFunc = () => {
       return;
     }
     const event = {
-      id: String(myEvents.length),
       title: eventsTitle,
-      start: eventsStartDate,
-      end: eventsEndDate,
+      start_date: eventsStartDate,
+      end_date: eventsEndDate,
     };
-
-    setMyEvents([...myEvents, event]);
-    ref.current.getApi().addEvent(event);
-    setIsOpenDialog(false);
+    const data = await createSchedule(event)
+    if (data) {
+      setMyEvents([...myEvents, data]);
+    }
+    // ref.current.getApi().addEvent(event);
+    setIsOpenSheet(false);
   };
+
   return {
+    myEvents,
+    setMyEvents,
     formatCaption,
+    eventsId,
+    allDay,
+    setAllDay,
     eventsTitle,
     setEventsTitle,
     eventsStartDate,
@@ -113,6 +105,8 @@ export const useCalendarFunc = () => {
     handleClick,
     handleSelect,
     onAddEvent,
+    isOpenSheet,
+    setIsOpenSheet,
     isOpenDialog,
     setIsOpenDialog,
     ref,
