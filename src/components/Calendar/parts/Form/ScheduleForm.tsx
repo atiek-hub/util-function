@@ -1,4 +1,3 @@
-import { Dispatch, SetStateAction } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -7,36 +6,16 @@ import {
   FormControl,
   FormField,
   FormItem,
+  FormLabel,
 } from "@/shadcn-components/ui/form";
 import { Input } from "@/shadcn-components/ui/input";
-import { DateFormItem } from "./DateFormItem";
-import { TimeFormItem } from "./TimeFormItem";
-import { Button } from "@/shadcn-components/ui/button";
-type Props = {
-  addEvent: () => void;
-  title: {
-    eventsTitle: string;
-    setEventsTitle: Dispatch<SetStateAction<string>>;
-  };
-  startDate: {
-    eventsStartDate: Date | undefined;
-    setEventsStartDate: Dispatch<SetStateAction<Date | undefined>>;
-  };
-  startTime: {
-    eventsStartTime: string;
-    setEventsStartTime: Dispatch<SetStateAction<string>>;
-  };
-  endDate: {
-    eventsEndDate: Date | undefined;
-    setEventsEndDate: Dispatch<SetStateAction<Date | undefined>>;
-  };
-  endTime: {
-    eventsEndTime: string;
-    setEventsEndTime: Dispatch<SetStateAction<string>>;
-  };
-  format: (date: Date | undefined) => string | undefined;
-};
-export const ScheduleForm = (props: Props) => {
+import { DateFormItem } from "../FormItem/DateFormItem";
+import { TimeFormItem } from "../FormItem/TimeFormItem";
+import { Switch } from "@/shadcn-components/ui/switch";
+import { ScheduleFormProps } from "../../types/form";
+
+
+export const ScheduleForm = (props: ScheduleFormProps) => {
   const { addEvent, title, startDate, startTime, endDate, endTime, format } =
     props;
   const { eventsTitle, setEventsTitle } = title;
@@ -49,6 +28,7 @@ export const ScheduleForm = (props: Props) => {
     title: z
       .string()
       .min(1, { message: "Title must be at least 1 characters." }),
+    all_day: z.boolean(),
     start_date: z.string().date(),
     start_time: z.string().time(),
     end_date: z.string().date(),
@@ -61,7 +41,7 @@ export const ScheduleForm = (props: Props) => {
   return (
     <div>
       <Form {...form}>
-        <form onSubmit={form.handleSubmit(addEvent)} className="space-y-8">
+        <form onSubmit={form.handleSubmit(addEvent!)} className="space-y-4">
           <FormField
             control={form.control}
             name="title"
@@ -73,6 +53,22 @@ export const ScheduleForm = (props: Props) => {
                     {...field}
                     value={eventsTitle}
                     onChange={(e) => setEventsTitle(e.target.value)}
+                  />
+                </FormControl>
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="all_day"
+            render={({ field }) => (
+              <FormItem className="flex items-center justify-between">
+                <FormLabel>終日</FormLabel>
+                <FormControl>
+                  <Switch
+                    style={{ padding: 0, marginTop: 0 }}
+                    checked={field.value}
+                    onCheckedChange={field.onChange}
                   />
                 </FormControl>
               </FormItem>
@@ -128,7 +124,6 @@ export const ScheduleForm = (props: Props) => {
           </div>
         </form>
       </Form>
-      <Button onClick={addEvent}>保存</Button>
     </div>
   );
 };
