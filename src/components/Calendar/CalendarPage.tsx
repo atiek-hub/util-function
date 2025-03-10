@@ -10,6 +10,7 @@ import { useEffect } from "react";
 import { getAllSchedules } from "./api/schedules";
 import { ApiEventsType } from "./types/api";
 import { supabase } from "@/lib/supabaseClient";
+import { Button } from "@/shadcn-components/ui/button";
 export const CalendarPage = () => {
   const {
     myEvents,
@@ -117,6 +118,7 @@ export const CalendarPage = () => {
           events={myEvents}
         />
       </div>
+      <Button onClick={() => supabase.auth.signOut()}>Logout</Button>
     </div>
   );
 };

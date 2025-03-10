@@ -5,6 +5,7 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Button } from '@/shadcn-components/ui/button';
 import { supabase } from '@/lib/supabaseClient';
+import { useNavigate } from 'react-router-dom';
 
 export const Signin = () => {
   const userSchema = z.object({
@@ -16,6 +17,8 @@ export const Signin = () => {
     resolver: zodResolver(userSchema),
   });
 
+  const navigate = useNavigate();
+
   const handleSignin = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault()
     const { userEmail, userPassword } = form.getValues()
@@ -25,6 +28,7 @@ export const Signin = () => {
         password: userPassword
       })
       if (error) throw new Error(error.message)
+      navigate('/');
     } catch (e) {
       console.error(e)
     }
