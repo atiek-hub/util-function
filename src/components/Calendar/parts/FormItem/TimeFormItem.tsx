@@ -1,4 +1,4 @@
-import { FormControl, FormItem } from "@/shadcn-components/ui/form";
+import { FormControl, FormItem, FormLabel } from "@/shadcn-components/ui/form";
 import { Input } from "@/shadcn-components/ui/input";
 import { TimeFormItemProps } from "../../types/formItem";
 
@@ -7,6 +7,7 @@ export const TimeFormItem = (props: TimeFormItemProps) => {
   return (
     <div>
       <FormItem>
+        <FormLabel>日時</FormLabel>
         <FormControl>
           <Input
             {...field}

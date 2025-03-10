@@ -1,6 +1,6 @@
 import { Button } from "@/shadcn-components/ui/button";
 import { Calendar } from "@/shadcn-components/ui/calendar";
-import { FormControl, FormItem } from "@/shadcn-components/ui/form";
+import { FormControl, FormItem, FormLabel } from "@/shadcn-components/ui/form";
 import {
   Popover,
   PopoverContent,
@@ -17,6 +17,7 @@ export const DateFormItem = (props: DateFormItemProps) => {
   const { date, setDate, format } = props;
   return (
     <FormItem className="w-full">
+      <FormLabel>日付</FormLabel>
       <FormControl>
         <Popover>
           <PopoverTrigger asChild>

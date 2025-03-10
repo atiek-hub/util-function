@@ -132,7 +132,7 @@ export const EditScheduleDialog = (props: EditScheduleDialogProps) => {
           <DialogHeader>
             <div className="flex justify-between align-center mb-3">
               <DialogTitle>イベント</DialogTitle>
-              <DialogClose asChild>
+              <DialogClose asChild onClick={() => setIsEditEvent(false)}>
                 <div className="flex space-x-1">
                   <X className="h-4 w-4 my-auto" />
                   <DialogTitle className="text-sm">閉じる</DialogTitle>
@@ -172,10 +172,12 @@ export const EditScheduleDialog = (props: EditScheduleDialogProps) => {
                     endTime={{ eventsEndTime, setEventsEndTime }}
                     format={format}
                   />
-                  <Button onClick={onClickEditSaveDialog}>保存</Button>
-                  <DialogClose asChild onClick={() => setIsEditEvent(false)}>
-                    <Button>Cancel</Button>
-                  </DialogClose>
+                  <div className="mt-3 flex justify-evenly">
+                    <Button onClick={onClickEditSaveDialog}>保存</Button>
+                    <DialogClose asChild onClick={() => setIsEditEvent(false)}>
+                      <Button>キャンセル</Button>
+                    </DialogClose>
+                  </div>
                 </div>
               ) : (
                 <div className="mt-2">

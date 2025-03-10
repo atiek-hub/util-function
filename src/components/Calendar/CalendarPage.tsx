@@ -9,6 +9,7 @@ import { EditScheduleDialog } from "./parts/Dialog/EditScheduleDialog";
 import { useEffect } from "react";
 import { getAllSchedules } from "./api/schedules";
 import { ApiEventsType } from "./types/api";
+import { supabase } from "@/lib/supabaseClient";
 export const CalendarPage = () => {
   const {
     myEvents,
@@ -39,16 +40,23 @@ export const CalendarPage = () => {
 
   useEffect(() => {
     const schedules = async () => {
-      const schedules = await getAllSchedules()
-      const formatSchedules = schedules.map((schedule: ApiEventsType) => {
-        return {
-          id: schedule.id,
-          title: schedule.title,
-          start: schedule.start_date,
-          end: schedule.end_date
+      const { data: { user } } = await supabase.auth.getUser()
+      if (user?.id) {
+        try {
+          const schedules = await getAllSchedules(user.id)
+          const formatSchedules = schedules.map((schedule: ApiEventsType) => {
+            return {
+              id: schedule.id,
+              title: schedule.title,
+              start: schedule.start_date,
+              end: schedule.end_date
+            }
+          })
+          setMyEvents(formatSchedules)
+        } catch (e) {
+          console.error(e)
         }
-      })
-      setMyEvents(formatSchedules)
+      }
     }
     schedules()
   }, [])

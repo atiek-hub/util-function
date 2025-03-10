@@ -4,6 +4,7 @@ import { format } from "date-fns";
 import { MyEventsType, SelectEventType } from "../types/hooks";
 import { EventClickArg } from "@fullcalendar/core/index.js";
 import { createSchedule } from "../api/schedules";
+import { supabase } from "@/lib/supabaseClient";
 
 
 
@@ -72,16 +73,22 @@ export const useCalendarFunc = () => {
       alert("開始時間と終了時間を確認してください");
       return;
     }
+
+    const { data: { user } } = await supabase.auth.getUser()
     const event = {
       title: eventsTitle,
       start_date: eventsStartDate,
       end_date: eventsEndDate,
+      user: {
+        connect: {
+          id: user?.id
+        }
+      }
     };
     const data = await createSchedule(event)
     if (data) {
       setMyEvents([...myEvents, data]);
     }
-    // ref.current.getApi().addEvent(event);
     setIsOpenSheet(false);
   };
 

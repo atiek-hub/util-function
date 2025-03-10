@@ -1,8 +1,10 @@
 import { ApiEventsType } from "../types/api";
 
-export const getAllSchedules = async () =>{
+export const getAllSchedules = async (userId:string) =>{
     try{
-        const response = await fetch('http://localhost:3000/schedules');
+        const response = await fetch(`http://localhost:3000/schedules/${userId}`,{
+            method:'GET'
+        });
         const data = await response.json();
         return data;
     }catch(e){

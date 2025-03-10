@@ -11,7 +11,7 @@ export const SetScheduleSheet = (props: SetScheduleSheetProps) => {
   const { open, children, onAddEvent } = props;
   const { isOpenSheet, setIsOpenSheet } = open;
   return (
-    <div >
+    <div>
       <Sheet open={isOpenSheet} onOpenChange={setIsOpenSheet}>
         <SheetContent side="left">
           <SheetHeader>

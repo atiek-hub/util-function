@@ -1,15 +1,9 @@
 import "./App.css";
-
-import { StopWatchFunction } from "./components/StopWatch/StopWatchFunction";
-import { TimerFunction } from "./components/Timer/TimerFunction";
-import { CalendarPage } from "./components/Calendar/CalendarPage";
-
+import AuthComponent from "./components/Auth/Auth"
 function App() {
   return (
     <>
-      <TimerFunction />
-      <StopWatchFunction/>
-      <CalendarPage/>
+      <AuthComponent />
     </>
   );
 }

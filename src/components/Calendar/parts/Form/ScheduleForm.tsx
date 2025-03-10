@@ -47,6 +47,7 @@ export const ScheduleForm = (props: ScheduleFormProps) => {
             name="title"
             render={({ field }) => (
               <FormItem>
+                <FormLabel>タイトル</FormLabel>
                 <FormControl>
                   <Input
                     placeholder="title"
