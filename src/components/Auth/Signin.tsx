@@ -30,7 +30,7 @@ export const Signin = () => {
       if (error) throw new Error(error.message)
       navigate('/');
     } catch (e) {
-      console.error(e)
+      console.error("Login Error", e)
     }
   }
 

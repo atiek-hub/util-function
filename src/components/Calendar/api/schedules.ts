@@ -71,3 +71,15 @@ export const updateSchedule = async (id: string, schedule:ApiEventsType) =>{
         console.log(e)
     }
 }
+
+export const getUser = async (id: string) =>{
+    try{
+        const response = await fetch(`http://localhost:3000/users/${id}`, {
+            method: 'GET',
+        });
+        const data = await response.json();
+        return data;
+    }catch(e){
+        console.log(e)
+    }
+}

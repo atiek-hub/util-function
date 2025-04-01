@@ -10,7 +10,7 @@ import { useEffect } from "react";
 import { getAllSchedules } from "./api/schedules";
 import { ApiEventsType } from "./types/api";
 import { supabase } from "@/lib/supabaseClient";
-import { Button } from "@/shadcn-components/ui/button";
+import { Header } from "./parts/Header/header";
 export const CalendarPage = () => {
   const {
     myEvents,
@@ -89,36 +89,41 @@ export const CalendarPage = () => {
         format={formatCaption}
       />
       <div>
-        <FullCalendar
-          locale='ja'
-          allDayText="終日"
-          height="auto"
-          plugins={[timeGridPlugin, dayGridPlugin, interactionPlugin]}
-          initialView="dayGridMonth"
-          slotDuration="00:30:00"
-          selectable={true}
-          businessHours={{
-            daysOfWeek: [1, 2, 3, 4, 5],
-            startTime: "00:00",
-            endTime: "24:00"
-          }}
-          weekends={true}
-          titleFormat={{
-            year: "numeric",
-            month: "short"
-          }}
-          headerToolbar={{
-            start: "title",
-            center: "prev,next,today",
-            end: "dayGridMonth,timeGridWeek"
-          }}
-          ref={ref}
-          eventClick={handleClick}
-          select={handleSelect}
-          events={myEvents}
-        />
+        <Header />
+        <div className="flex justify-center">
+          <div className="w-10/12 mt-20">
+            <FullCalendar
+              locale='ja'
+              allDayText="終日"
+              contentHeight={700}
+              expandRows={true}
+              plugins={[timeGridPlugin, dayGridPlugin, interactionPlugin]}
+              initialView="dayGridMonth"
+              slotDuration="00:30:00"
+              selectable={true}
+              businessHours={{
+                daysOfWeek: [1, 2, 3, 4, 5],
+                startTime: "00:00",
+                endTime: "24:00"
+              }}
+              weekends={true}
+              titleFormat={{
+                year: "numeric",
+                month: "short"
+              }}
+              headerToolbar={{
+                start: "title",
+                center: "prev,next,today",
+                end: "dayGridMonth,timeGridWeek"
+              }}
+              ref={ref}
+              eventClick={handleClick}
+              select={handleSelect}
+              events={myEvents}
+            />
+          </div>
+        </div>
       </div>
-      <Button onClick={() => supabase.auth.signOut()}>Logout</Button>
     </div>
   );
 };
