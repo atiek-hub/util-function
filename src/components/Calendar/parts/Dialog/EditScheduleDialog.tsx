@@ -4,7 +4,6 @@ import {
   Dialog,
   DialogClose,
   DialogContent,
-  DialogFooter,
   DialogHeader,
   DialogTitle,
 } from "@/shadcn-components/ui/dialog";
@@ -18,25 +17,26 @@ import {
 import { Ellipsis, Pencil, X } from "lucide-react";
 import { useState } from "react";
 import { EditScheduleDialogProps } from "../../types/dialog";
-import { deleteSchedule, updateSchedule } from "../../api/schedules";
 import { ScheduleForm } from "../Form/ScheduleForm";
+import { ConfirmationDialog } from "./ConfirmationDialog";
 
 export const EditScheduleDialog = (props: EditScheduleDialogProps) => {
   const {
-    events,
     open,
-    eventsId,
     title,
+    allDay,
     startDate,
     startTime,
     endDate,
     endTime,
-    format
+    format,
+    onEditEvent,
+    onDeleteEvent,
   } = props;
 
-  const { myEvents, setMyEvents } = events;
   const { isOpenDialog, setIsOpenDialog } = open;
   const { eventsTitle, setEventsTitle } = title;
+  const { isAllDay, setIsAllDay } = allDay;
   const { eventsStartDate, setEventsStartDate } = startDate;
   const { eventsStartTime, setEventsStartTime } = startTime;
   const { eventsEndDate, setEventsEndDate } = endDate;
@@ -45,46 +45,18 @@ export const EditScheduleDialog = (props: EditScheduleDialogProps) => {
   const [isOpenEditDialog, setIsOpenEditDialog] = useState<boolean>(false);
   const [isEditEvent, setIsEditEvent] = useState<boolean>(false);
 
-  const onClickOpenDeleteDialog = () => {
-    setIsOpenDeleteDialog(true);
-  };
-  const onClickOpenEditDialog = () => {
-    setIsEditEvent(true);
-  };
-  const onClickEventDelete = async () => {
-    const data = await deleteSchedule(eventsId)
-    setMyEvents(myEvents.filter((event) => event.id !== data.id));
+  const onClickEventDelete = () => {
+    onDeleteEvent();
     setIsOpenDeleteDialog(false);
     setIsOpenDialog(false)
   };
+
   const onClickEditSaveDialog = () => {
     setIsOpenEditDialog(true)
   }
-  const onClickEventSave = async () => {
-    const [sh, sm] = eventsStartTime.split(":").map(Number);
-    const [eh, em] = eventsEndTime.split(":").map(Number);
-    eventsStartDate!.setHours(sh);
-    eventsStartDate!.setMinutes(sm);
-    eventsEndDate!.setHours(eh);
-    eventsEndDate!.setMinutes(em);
-    const data = {
-      id: Number(eventsId),
-      title: eventsTitle,
-      start_date: eventsStartDate,
-      end_date: eventsEndDate,
-    }
-    const updateData = await updateSchedule(eventsId, data)
-    setMyEvents(myEvents.map((event) => {
-      if (event.id === updateData.id) {
-        return {
-          id: updateData.id,
-          title: updateData.title,
-          start: updateData.start_date,
-          end: updateData.end_date
-        }
-      }
-      return event
-    }));
+
+  const onClickEventSave = () => {
+    onEditEvent();
     setIsOpenDialog(false);
     setIsOpenEditDialog(false)
     setIsEditEvent(false);
@@ -101,32 +73,20 @@ export const EditScheduleDialog = (props: EditScheduleDialogProps) => {
 
   return (
     <div>
-      <Dialog open={isOpenDeleteDialog} onOpenChange={setIsOpenDeleteDialog}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>削除してもよろしいですか？</DialogTitle>
-          </DialogHeader>
-          <DialogFooter>
-            <Button onClick={onClickEventDelete}>OK</Button>
-            <DialogClose asChild>
-              <Button>Cancel</Button>
-            </DialogClose>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
-      <Dialog open={isOpenEditDialog} onOpenChange={setIsOpenEditDialog}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>編集内容を保存してもよろしいですか？</DialogTitle>
-          </DialogHeader>
-          <DialogFooter>
-            <Button onClick={onClickEventSave}>保存</Button>
-            <DialogClose asChild>
-              <Button>Cancel</Button>
-            </DialogClose>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+      <ConfirmationDialog
+        isOpen={isOpenDeleteDialog}
+        setIsOpen={setIsOpenDeleteDialog}
+        dialogTitle="削除してもよろしいですか？"
+        buttonText="OK"
+        handleClick={onClickEventDelete}
+      />
+      <ConfirmationDialog
+        isOpen={isOpenEditDialog}
+        setIsOpen={setIsOpenEditDialog}
+        dialogTitle="編集内容を保存してもよろしいですか？"
+        buttonText="保存"
+        handleClick={onClickEventSave}
+      />
       <Dialog open={isOpenDialog} onOpenChange={setIsOpenDialog}>
         <DialogContent onInteractOutside={(e) => e.preventDefault()}>
           <DialogHeader>
@@ -141,7 +101,7 @@ export const EditScheduleDialog = (props: EditScheduleDialogProps) => {
             </div>
             <div className="flex justify-end">
               <Pencil
-                onClick={onClickOpenEditDialog}
+                onClick={() => setIsEditEvent(true)}
                 className="cursor-pointer hover:text-gray-400 mx-2"
               />
               <DropdownMenu>
@@ -152,7 +112,7 @@ export const EditScheduleDialog = (props: EditScheduleDialogProps) => {
                   <DropdownMenuSeparator />
                   <DropdownMenuItem>複製</DropdownMenuItem>
                   <DropdownMenuItem>ヘルプ</DropdownMenuItem>
-                  <DropdownMenuItem onClick={onClickOpenDeleteDialog}>
+                  <DropdownMenuItem onClick={() => setIsOpenDeleteDialog(true)}>
                     削除
                   </DropdownMenuItem>
                 </DropdownMenuContent>
@@ -164,7 +124,7 @@ export const EditScheduleDialog = (props: EditScheduleDialogProps) => {
               {isEditEvent ? (
                 <div className="mt-2">
                   <ScheduleForm
-                    // allDay={{ allDay, setAllDay }}
+                    allDay={{ isAllDay, setIsAllDay }}
                     title={{ eventsTitle, setEventsTitle }}
                     startDate={{ eventsStartDate, setEventsStartDate }}
                     startTime={{ eventsStartTime, setEventsStartTime }}

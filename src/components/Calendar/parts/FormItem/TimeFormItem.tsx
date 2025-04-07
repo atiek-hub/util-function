@@ -3,17 +3,20 @@ import { Input } from "@/shadcn-components/ui/input";
 import { TimeFormItemProps } from "../../types/formItem";
 
 export const TimeFormItem = (props: TimeFormItemProps) => {
-  const { field, time, setTime } = props;
+  const { field, timeTitle, setTime, disabled } = props;
   return (
     <div>
       <FormItem>
-        <FormLabel>日時</FormLabel>
+        <FormLabel>{timeTitle}</FormLabel>
         <FormControl>
           <Input
-            {...field}
             type="time"
-            value={time}
-            onChange={(e) => setTime(e.target.value)}
+            value={field.value}
+            onChange={(e) => {
+              field.onChange(e.target.value);
+              setTime(e.target.value)
+            }}
+            disabled={disabled} // Disable the time input if all day is checked
           />
         </FormControl>
       </FormItem>

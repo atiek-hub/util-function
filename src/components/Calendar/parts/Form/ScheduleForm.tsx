@@ -13,12 +13,14 @@ import { DateFormItem } from "../FormItem/DateFormItem";
 import { TimeFormItem } from "../FormItem/TimeFormItem";
 import { Switch } from "@/shadcn-components/ui/switch";
 import { ScheduleFormProps } from "../../types/form";
+import { useEffect } from "react";
 
 
 export const ScheduleForm = (props: ScheduleFormProps) => {
-  const { addEvent, title, startDate, startTime, endDate, endTime, format } =
+  const { addEvent, title, allDay, startDate, startTime, endDate, endTime, format } =
     props;
   const { eventsTitle, setEventsTitle } = title;
+  const { isAllDay, setIsAllDay } = allDay;
   const { eventsStartDate, setEventsStartDate } = startDate;
   const { eventsStartTime, setEventsStartTime } = startTime;
   const { eventsEndDate, setEventsEndDate } = endDate;
@@ -28,16 +30,42 @@ export const ScheduleForm = (props: ScheduleFormProps) => {
     title: z
       .string()
       .min(1, { message: "Title must be at least 1 characters." }),
-    all_day: z.boolean(),
-    start_date: z.string().date(),
-    start_time: z.string().time(),
-    end_date: z.string().date(),
-    end_time: z.string().time(),
+    all_day: z.boolean().default(false).optional(),
+    start_date: z.date({
+      required_error: "A date of start schedule is required.",
+    }),
+    start_time: z
+      .string()
+      .min(4, { message: "A time of start schedule is required" }),
+    end_date: z.date({ required_error: "A date of end schedule is required." }),
+    end_time: z
+      .string()
+      .min(4, { message: "A time of end schedule is required" }),
   });
 
   const form = useForm<z.infer<typeof scheduleSchema>>({
     resolver: zodResolver(scheduleSchema),
   });
+
+  const handleToggle = (e: boolean) => {
+    setIsAllDay(e); // 状態をトグルする関数
+    if (e) {
+      form.setValue("start_time", "00:00");
+      setEventsStartTime("00:00");
+      form.setValue("end_time", "00:00");
+      setEventsEndTime("00:00");
+    }
+  };
+
+  useEffect(() => {
+    form.setValue("start_date", eventsStartDate!);
+    form.setValue("start_time", eventsStartTime);
+    form.setValue("end_date", eventsEndDate!);
+    form.setValue("end_time", eventsEndTime);
+    form.setValue("title", eventsTitle);
+    form.setValue("all_day", isAllDay);
+  }, [props]);
+
   return (
     <div>
       <Form {...form}>
@@ -50,10 +78,12 @@ export const ScheduleForm = (props: ScheduleFormProps) => {
                 <FormLabel>タイトル</FormLabel>
                 <FormControl>
                   <Input
-                    placeholder="title"
                     {...field}
-                    value={eventsTitle}
-                    onChange={(e) => setEventsTitle(e.target.value)}
+                    placeholder="title"
+                    onChange={(e) => {
+                      field.onChange(e.target.value); // field.onChangeを呼び出す
+                      setEventsTitle(e.target.value);
+                    }}
                   />
                 </FormControl>
               </FormItem>
@@ -67,9 +97,11 @@ export const ScheduleForm = (props: ScheduleFormProps) => {
                 <FormLabel>終日</FormLabel>
                 <FormControl>
                   <Switch
-                    style={{ padding: 0, marginTop: 0 }}
                     checked={field.value}
-                    onCheckedChange={field.onChange}
+                    onCheckedChange={(e) => {
+                      field.onChange();
+                      handleToggle(e);
+                    }}
                   />
                 </FormControl>
               </FormItem>
@@ -79,9 +111,10 @@ export const ScheduleForm = (props: ScheduleFormProps) => {
             <FormField
               control={form.control}
               name="start_date"
-              render={() => (
+              render={({ field }) => (
                 <DateFormItem
-                  date={eventsStartDate}
+                  field={field}
+                  dateTitle="開始日"
                   setDate={setEventsStartDate}
                   format={format}
                 />
@@ -93,8 +126,9 @@ export const ScheduleForm = (props: ScheduleFormProps) => {
               render={({ field }) => (
                 <TimeFormItem
                   field={field}
-                  time={eventsStartTime}
+                  timeTitle="開始時間"
                   setTime={setEventsStartTime}
+                  disabled={isAllDay} // Disable the time input if all day is checked
                 />
               )}
             />
@@ -103,9 +137,10 @@ export const ScheduleForm = (props: ScheduleFormProps) => {
             <FormField
               control={form.control}
               name="end_date"
-              render={() => (
+              render={({ field }) => (
                 <DateFormItem
-                  date={eventsEndDate}
+                  field={field}
+                  dateTitle="終了日"
                   setDate={setEventsEndDate}
                   format={format}
                 />
@@ -117,8 +152,9 @@ export const ScheduleForm = (props: ScheduleFormProps) => {
               render={({ field }) => (
                 <TimeFormItem
                   field={field}
-                  time={eventsEndTime}
+                  timeTitle="終了時間"
                   setTime={setEventsEndTime}
+                  disabled={isAllDay} // Disable the time input if all day is checked
                 />
               )}
             />

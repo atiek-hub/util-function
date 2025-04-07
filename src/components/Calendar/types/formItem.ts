@@ -3,20 +3,15 @@ import { ControllerRenderProps } from "react-hook-form";
 
 
 export type DateFormItemProps = {
-    date: Date | undefined;
+    field:any
+    dateTitle: string;
     setDate: Dispatch<SetStateAction<Date | undefined>>;
     format: (date: Date | undefined) => string | undefined;
   };
 
 export type TimeFormItemProps = {
-    field: ControllerRenderProps<{
-      title: string;
-      all_day: boolean;
-      start_date: string;
-      start_time: string;
-      end_date: string;
-      end_time: string;
-    }>;
-    time: string;
+    field: any
+    timeTitle: string;
     setTime: Dispatch<SetStateAction<string>>;
+    disabled: boolean; // Disable the time input if all day is checked
   };

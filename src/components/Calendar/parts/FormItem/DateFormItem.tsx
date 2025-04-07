@@ -14,10 +14,10 @@ import { DateFormItemProps } from "../../types/formItem";
 
 
 export const DateFormItem = (props: DateFormItemProps) => {
-  const { date, setDate, format } = props;
+  const { field, dateTitle, setDate, format } = props;
   return (
     <FormItem className="w-full">
-      <FormLabel>日付</FormLabel>
+      <FormLabel>{dateTitle}</FormLabel>
       <FormControl>
         <Popover>
           <PopoverTrigger asChild>
@@ -25,20 +25,23 @@ export const DateFormItem = (props: DateFormItemProps) => {
               variant={"outline"}
               className={cn(
                 "justify-start text-left font-normal",
-                !date && "text-muted-foreground"
+                !field.value && "text-muted-foreground"
               )}
               style={{ width: "98%" }}
             >
               <CalendarIcon />
-              <span>{format(date)}</span>
+              <span>{format(field.value)}</span>
             </Button>
           </PopoverTrigger>
           <PopoverContent className="w-auto p-0">
             <Calendar
               locale={ja}
               mode="single"
-              selected={date}
-              onSelect={setDate}
+              selected={field.value}
+              onSelect={(date) => {
+                setDate(date)
+                field.onChange(date)
+              }}
               initialFocus
             />
           </PopoverContent>

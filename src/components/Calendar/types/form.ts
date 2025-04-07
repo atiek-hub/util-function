@@ -6,9 +6,9 @@ export type ScheduleFormProps = {
       eventsTitle: string;
       setEventsTitle: Dispatch<SetStateAction<string>>;
     };
-    allDay?: {
-      allDay: boolean;
-      setAllDay: Dispatch<SetStateAction<boolean>>;
+    allDay: {
+      isAllDay: boolean;
+      setIsAllDay: Dispatch<SetStateAction<boolean>>;
     };
     startDate: {
       eventsStartDate: Date | undefined;

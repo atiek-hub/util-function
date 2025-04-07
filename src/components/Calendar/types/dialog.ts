@@ -1,5 +1,4 @@
 import { Dispatch, ReactNode, SetStateAction } from "react";
-import { MyEventsType } from "./hooks";
 
 export type SetScheduleSheetProps = {
     open: {
@@ -12,22 +11,17 @@ export type SetScheduleSheetProps = {
 
 
   export type EditScheduleDialogProps = {
-    events: {
-      myEvents: MyEventsType[];
-      setMyEvents: Dispatch<SetStateAction<MyEventsType[]>>;
-    };
     open: {
       isOpenDialog: boolean;
       setIsOpenDialog: Dispatch<SetStateAction<boolean>>;
     };
-    eventsId: string;
     title: {
       eventsTitle: string;
       setEventsTitle: Dispatch<SetStateAction<string>>;
     };
     allDay: {
-      allDay: boolean;
-      setAllDay: Dispatch<SetStateAction<boolean>>;
+      isAllDay: boolean;
+      setIsAllDay: Dispatch<SetStateAction<boolean>>;
     };
     startDate: {
       eventsStartDate: Date | undefined;
@@ -46,4 +40,6 @@ export type SetScheduleSheetProps = {
       setEventsEndTime: Dispatch<SetStateAction<string>>;
     };
     format: (date: Date | undefined) => string | undefined;
+    onEditEvent: () => void;
+    onDeleteEvent: () => void;
   }

@@ -13,14 +13,11 @@ import { supabase } from "@/lib/supabaseClient";
 import { Header } from "./parts/Header/header";
 export const CalendarPage = () => {
   const {
-    myEvents,
-    setMyEvents,
-    formatCaption,
-    eventsId,
-    allDay,
-    setAllDay,
+    ref,
     eventsTitle,
     setEventsTitle,
+    isAllDay,
+    setIsAllDay,
     eventsStartDate,
     setEventsStartDate,
     eventsStartTime,
@@ -29,14 +26,18 @@ export const CalendarPage = () => {
     setEventsEndDate,
     eventsEndTime,
     setEventsEndTime,
+    myEvents,
+    setMyEvents,
+    formatCaption,
     handleClick,
     handleSelect,
     onAddEvent,
+    onEditEvent,
+    onDeleteEvent,
     isOpenSheet,
     setIsOpenSheet,
     isOpenDialog,
     setIsOpenDialog,
-    ref,
   } = useCalendarFunc();
 
   useEffect(() => {
@@ -67,7 +68,7 @@ export const CalendarPage = () => {
       <SetScheduleSheet open={{ isOpenSheet, setIsOpenSheet }} onAddEvent={onAddEvent}>
         <ScheduleForm
           addEvent={onAddEvent}
-          allDay={{ allDay, setAllDay }}
+          allDay={{ isAllDay, setIsAllDay }}
           title={{ eventsTitle, setEventsTitle }}
           startDate={{ eventsStartDate, setEventsStartDate }}
           startTime={{ eventsStartTime, setEventsStartTime }}
@@ -77,16 +78,16 @@ export const CalendarPage = () => {
         />
       </SetScheduleSheet>
       <EditScheduleDialog
-        events={{ myEvents, setMyEvents }}
-        eventsId={eventsId}
         open={{ isOpenDialog, setIsOpenDialog }}
         title={{ eventsTitle, setEventsTitle }}
-        allDay={{ allDay, setAllDay }}
+        allDay={{ isAllDay, setIsAllDay }}
         startDate={{ eventsStartDate, setEventsStartDate }}
         startTime={{ eventsStartTime, setEventsStartTime }}
         endDate={{ eventsEndDate, setEventsEndDate }}
         endTime={{ eventsEndTime, setEventsEndTime }}
         format={formatCaption}
+        onEditEvent={onEditEvent}
+        onDeleteEvent={onDeleteEvent}
       />
       <div>
         <Header />
