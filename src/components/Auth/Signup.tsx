@@ -34,8 +34,11 @@ export const Signup = () => {
         password: userPassword,
       });
       if (error) throw new Error(error.message);
+      if (!data.user?.id) {
+        throw new Error("User ID is undefined");
+      }
       const user_data = {
-        id: data.user?.id,
+        id: data.user.id,
         name: userName,
         email: userEmail,
       };

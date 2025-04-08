@@ -18,6 +18,7 @@ import { DateFormItemProps } from "../../../../types/formItem";
 
 export const DateFormItem = (props: DateFormItemProps) => {
   const { field, dateTitle, setDate, format } = props;
+  console.log("value", field);
   return (
     <FormItem className="w-full">
       <FormLabel>{dateTitle}</FormLabel>

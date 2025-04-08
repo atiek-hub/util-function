@@ -41,3 +41,11 @@ export type EditScheduleDialogProps = {
   onEditEvent: () => void;
   onDeleteEvent: () => void;
 };
+
+export type ConfirmationDialogProps = {
+  isOpen: boolean;
+  setIsOpen: (isOpen: boolean) => void;
+  dialogTitle: string;
+  buttonText: string;
+  handleClick: () => void;
+};

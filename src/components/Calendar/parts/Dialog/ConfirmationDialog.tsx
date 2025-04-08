@@ -7,8 +7,9 @@ import {
   DialogTitle,
 } from "@/shadcn-components/ui/dialog";
 import { Button } from "@/shadcn-components/ui/button";
+import { ConfirmationDialogProps } from "@/types/dialog";
 
-export const ConfirmationDialog = (props) => {
+export const ConfirmationDialog = (props: ConfirmationDialogProps) => {
   const { isOpen, setIsOpen, dialogTitle, buttonText, handleClick } = props;
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
@@ -24,6 +25,5 @@ export const ConfirmationDialog = (props) => {
         </DialogFooter>
       </DialogContent>
     </Dialog>
-  )
-}
-
+  );
+};
