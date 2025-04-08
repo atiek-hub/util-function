@@ -1,12 +1,14 @@
 import { createRef, useState } from "react";
 import FullCalendar from "@fullcalendar/react";
 import { format } from "date-fns";
-import { MyEventsType, SelectEventType } from "../types/hooks";
+import { MyEventsType, SelectEventType } from "../../../types/hooks";
 import { EventClickArg } from "@fullcalendar/core/index.js";
-import { createSchedule, deleteSchedule, updateSchedule } from "../api/schedules";
+import {
+  createSchedule,
+  deleteSchedule,
+  updateSchedule,
+} from "../api/schedules";
 import { supabase } from "@/lib/supabaseClient";
-
-
 
 export const useCalendarFunc = () => {
   const ref = createRef<FullCalendar>();
@@ -21,22 +23,12 @@ export const useCalendarFunc = () => {
   const [isOpenDialog, setIsOpenDialog] = useState<boolean>(false);
   const [isOpenSheet, setIsOpenSheet] = useState<boolean>(false);
 
-
-  const formatCaption = (date: Date | undefined) => {
-    if (!date) {
-      return;
-    }
-    const dayArr = ["日", "月", "火", "水", "木", "金", "土"];
-    const day = format(date, "MM月dd日");
-    return `${day}(${dayArr[date.getDay()]})`;
-  };
-
   //追加済みのイベントをクリックした時
   const handleClick = (addedInfo: EventClickArg) => {
     const { id, title, start, end, allDay } = addedInfo.event;
     setEventsId(id);
     setEventsTitle(title);
-    setIsAllDay(allDay)
+    setIsAllDay(allDay);
     setEventsStartDate(start!);
     setEventsStartTime(format(start!, "HH:mm"));
     setEventsEndDate(end!);
@@ -66,30 +58,26 @@ export const useCalendarFunc = () => {
     if (!eventsStartDate || !eventsEndDate) {
       return;
     }
-    const [sh, sm] = eventsStartTime.split(":").map(Number);
-    const [eh, em] = eventsEndTime.split(":").map(Number);
-    eventsStartDate.setHours(sh);
-    eventsStartDate.setMinutes(sm);
-    eventsEndDate.setHours(eh);
-    eventsEndDate.setMinutes(em);
+    setEventTitme(eventsStartDate, eventsStartTime);
+    setEventTitme(eventsEndDate, eventsEndTime);
 
     if (eventsStartDate >= eventsEndDate) {
       alert("開始時間と終了時間を確認してください");
       return;
     }
 
-    const { data: { user } } = await supabase.auth.getUser()
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+
     const event = {
       title: eventsTitle,
-      start_date: eventsStartDate,
-      end_date: eventsEndDate,
-      user: {
-        connect: {
-          id: user?.id
-        }
-      }
+      allDay: isAllDay,
+      start: eventsStartDate,
+      end: eventsEndDate,
+      id: user!.id,
     };
-    const data = await createSchedule(event)
+    const data = await createSchedule(event);
     if (data) {
       setMyEvents([...myEvents, data]);
     }
@@ -97,6 +85,15 @@ export const useCalendarFunc = () => {
   };
 
   const onEditEvent = async () => {
+    if (!eventsStartDate || !eventsEndDate) {
+      return;
+    }
+    setEventTitme(eventsStartDate, eventsStartTime);
+    setEventTitme(eventsEndDate, eventsEndTime);
+    if (eventsStartDate >= eventsEndDate) {
+      alert("開始時間と終了時間を確認してください");
+      return;
+    }
     const [sh, sm] = eventsStartTime.split(":").map(Number);
     const [eh, em] = eventsEndTime.split(":").map(Number);
     eventsStartDate!.setHours(sh);
@@ -104,28 +101,53 @@ export const useCalendarFunc = () => {
     eventsEndDate!.setHours(eh);
     eventsEndDate!.setMinutes(em);
     const data = {
-      id: Number(eventsId),
       title: eventsTitle,
-      start_date: eventsStartDate,
-      end_date: eventsEndDate,
-    }
-    const updateData = await updateSchedule(eventsId, data)
-    setMyEvents(myEvents.map((event) => {
-      if (event.id === updateData.id) {
-        return {
-          id: updateData.id,
-          title: updateData.title,
-          start: updateData.start_date,
-          end: updateData.end_date
+      allDay: isAllDay,
+      start: eventsStartDate,
+      end: eventsEndDate,
+    };
+    const updateData = await updateSchedule(eventsId, data);
+    setMyEvents((prevEvents: MyEventsType[]) =>
+      prevEvents.map((event: MyEventsType) => {
+        if (event.id === updateData.id) {
+          return {
+            ...event,
+            id: updateData.id,
+            title: updateData.title,
+            allDay: updateData.allDay,
+            start: updateData.start,
+            end: updateData.end,
+          };
         }
-      }
-      return event
-    }));
-  }
+        return event;
+      })
+    );
+  };
 
   const onDeleteEvent = async () => {
-    const data = await deleteSchedule(eventsId)
-    setMyEvents(myEvents.filter((event) => event.id !== data.id));
+    const res = await deleteSchedule(eventsId);
+    if (!res) {
+      alert("スケジュールの削除に失敗しました");
+      return;
+    }
+    setMyEvents((prevEvent: MyEventsType[]) =>
+      prevEvent.filter((event: MyEventsType) => event.id !== res.id)
+    );
+  };
+
+  const formatCaption = (date: Date | undefined) => {
+    if (!date) {
+      return;
+    }
+    const dayArr = ["日", "月", "火", "水", "木", "金", "土"];
+    const day = format(date, "MM月dd日");
+    return `${day}(${dayArr[date.getDay()]})`;
+  };
+  //時間をセットする関数
+  const setEventTitme = (eventDate: Date, timeString: string) => {
+    const [hours, minutes] = timeString.split(":").map(Number);
+    eventDate.setHours(hours);
+    eventDate.setMinutes(minutes);
   };
 
   return {

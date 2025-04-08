@@ -7,18 +7,27 @@ import {
   FormField,
   FormItem,
   FormLabel,
+  FormMessage,
 } from "@/shadcn-components/ui/form";
 import { Input } from "@/shadcn-components/ui/input";
 import { DateFormItem } from "../FormItem/DateFormItem";
 import { TimeFormItem } from "../FormItem/TimeFormItem";
 import { Switch } from "@/shadcn-components/ui/switch";
-import { ScheduleFormProps } from "../../types/form";
+import { ScheduleFormProps } from "../../../../types/form";
 import { useEffect } from "react";
-
+import { Button } from "@/shadcn-components/ui/button";
 
 export const ScheduleForm = (props: ScheduleFormProps) => {
-  const { addEvent, title, allDay, startDate, startTime, endDate, endTime, format } =
-    props;
+  const {
+    clickEvent,
+    title,
+    allDay,
+    startDate,
+    startTime,
+    endDate,
+    endTime,
+    format,
+  } = props;
   const { eventsTitle, setEventsTitle } = title;
   const { isAllDay, setIsAllDay } = allDay;
   const { eventsStartDate, setEventsStartDate } = startDate;
@@ -54,6 +63,9 @@ export const ScheduleForm = (props: ScheduleFormProps) => {
       setEventsStartTime("00:00");
       form.setValue("end_time", "00:00");
       setEventsEndTime("00:00");
+      const EndDateWhenAllDayIsSet = eventsStartDate!.getDate() + 1;
+      eventsEndDate!.setDate(EndDateWhenAllDayIsSet);
+      form.setValue("end_date", eventsStartDate!);
     }
   };
 
@@ -67,9 +79,9 @@ export const ScheduleForm = (props: ScheduleFormProps) => {
   }, [props]);
 
   return (
-    <div>
+    <div className="mt-4">
       <Form {...form}>
-        <form onSubmit={form.handleSubmit(addEvent!)} className="space-y-4">
+        <form onSubmit={form.handleSubmit(clickEvent!)} className="space-y-4">
           <FormField
             control={form.control}
             name="title"
@@ -86,6 +98,7 @@ export const ScheduleForm = (props: ScheduleFormProps) => {
                     }}
                   />
                 </FormControl>
+                <FormMessage />
               </FormItem>
             )}
           />
@@ -104,6 +117,7 @@ export const ScheduleForm = (props: ScheduleFormProps) => {
                     }}
                   />
                 </FormControl>
+                <FormMessage />
               </FormItem>
             )}
           />
@@ -158,6 +172,9 @@ export const ScheduleForm = (props: ScheduleFormProps) => {
                 />
               )}
             />
+          </div>
+          <div className="flex justify-end">
+            <Button type="submit">保存</Button>
           </div>
         </form>
       </Form>

@@ -1,4 +1,13 @@
 import { useRef, useState } from "react";
+import { Header } from "../Header/header";
+import { Button } from "@/shadcn-components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/shadcn-components/ui/card";
 
 export const StopWatchFunction = () => {
   const [elapsedTime, setElapsedTime] = useState(0); // 経過時間（ms）
@@ -40,22 +49,38 @@ export const StopWatchFunction = () => {
   };
 
   return (
-    <div style={{ textAlign: "center", fontFamily: "Arial" }}>
-      <h1>React Stopwatch</h1>
-      <h2>{formatTime(elapsedTime)}</h2>
-      <div>
-        <button onClick={startStopwatch} disabled={isRunning}>
-          Start
-        </button>
-        <button onClick={stopStopwatch} disabled={!isRunning}>
-          Stop
-        </button>
-        <button
-          onClick={resetStopwatch}
-          disabled={isRunning && elapsedTime === 0}
-        >
-          Reset
-        </button>
+    <div>
+      <Header />
+      <div className="flex justify-center">
+        <Card className="p-6 rounded-lg shadow-xl mt-20 ">
+          <CardHeader>
+            <CardTitle>Simple Stopwatch</CardTitle>
+            <CardDescription>
+              A simple stopwatch built with React and TypeScript.
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-4">
+              <div className="flex justify-center">
+                <h1>{formatTime(elapsedTime)}</h1>
+              </div>
+              <div className="flex  justify-self-center space-x-3">
+                <Button onClick={startStopwatch} disabled={isRunning}>
+                  Start
+                </Button>
+                <Button onClick={stopStopwatch} disabled={!isRunning}>
+                  Stop
+                </Button>
+                <Button
+                  onClick={resetStopwatch}
+                  disabled={isRunning && elapsedTime === 0}
+                >
+                  Reset
+                </Button>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
       </div>
     </div>
   );

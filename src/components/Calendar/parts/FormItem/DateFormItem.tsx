@@ -1,6 +1,11 @@
 import { Button } from "@/shadcn-components/ui/button";
 import { Calendar } from "@/shadcn-components/ui/calendar";
-import { FormControl, FormItem, FormLabel } from "@/shadcn-components/ui/form";
+import {
+  FormControl,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/shadcn-components/ui/form";
 import {
   Popover,
   PopoverContent,
@@ -9,9 +14,7 @@ import {
 import { cn } from "@/lib/utils";
 import { CalendarIcon } from "lucide-react";
 import { ja } from "date-fns/locale";
-import { DateFormItemProps } from "../../types/formItem";
-
-
+import { DateFormItemProps } from "../../../../types/formItem";
 
 export const DateFormItem = (props: DateFormItemProps) => {
   const { field, dateTitle, setDate, format } = props;
@@ -39,14 +42,15 @@ export const DateFormItem = (props: DateFormItemProps) => {
               mode="single"
               selected={field.value}
               onSelect={(date) => {
-                setDate(date)
-                field.onChange(date)
+                setDate(date);
+                field.onChange(date);
               }}
               initialFocus
             />
           </PopoverContent>
         </Popover>
       </FormControl>
+      <FormMessage />
     </FormItem>
   );
 };

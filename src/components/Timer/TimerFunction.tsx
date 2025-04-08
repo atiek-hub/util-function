@@ -1,7 +1,14 @@
 import { Button } from "@/shadcn-components/ui/button";
 import { ChevronDown, ChevronUp } from "lucide-react";
-import { Card } from "@/shadcn-components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/shadcn-components/ui/card";
 import { useTimerFunc } from "./hooks/useTimerFunc";
+import { Header } from "../Header/header";
 const ONE_HOURS = 3600000;
 const ONE_MINUTES = 60000;
 const ONE_SECONDS = 1000;
@@ -23,51 +30,64 @@ export const TimerFunction = () => {
     stopSound,
   } = useTimerFunc();
   return (
-    <div className="flex justify-center">
-      <Card className="p-6 rounded-lg shadow-xl">
-        <div className="flex  justify-self-center space-x-3">
-          {BASE_TIME.map(({ label, time }) => (
-            <div key={label}>
-              <Button
-                onClick={() => plus(time)}
-                disabled={timerState === "active"}
-                variant="outline"
-                size="icon"
-              >
-                <ChevronUp />
+    <div>
+      <Header />
+      <div className="flex justify-center">
+        <Card className="p-6 rounded-lg shadow-xl mt-20">
+          <CardHeader>
+            <CardTitle>Simple Timer</CardTitle>
+            <CardDescription>
+              A simple timer built with React and TypeScript.
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="flex  justify-self-center space-x-9">
+              {BASE_TIME.map(({ label, time }) => (
+                <div key={label}>
+                  <Button
+                    onClick={() => plus(time)}
+                    disabled={timerState === "active"}
+                    variant="outline"
+                    size="icon"
+                  >
+                    <ChevronUp />
+                  </Button>
+                </div>
+              ))}
+            </div>
+            <div className="flex  justify-self-center my-2 space-x-2">
+              <h1>{formatTime(timerCount)}</h1>
+            </div>
+            <div className="flex justify-self-center space-x-9">
+              {BASE_TIME.map(({ label, time }) => (
+                <div key={label}>
+                  <Button
+                    onClick={() => minus(time)}
+                    disabled={timerState === "active"}
+                    variant="outline"
+                    size="icon"
+                  >
+                    <ChevronDown />
+                  </Button>
+                </div>
+              ))}
+            </div>
+            <div className="flex justify-center space-x-9 mt-4">
+              {timerState === "active" ? (
+                <Button onClick={stop}>Stop</Button>
+              ) : (
+                <Button onClick={start}>Start</Button>
+              )}
+              <Button variant="outline" onClick={reset}>
+                Reset
               </Button>
             </div>
-          ))}
-        </div>
-        <div className="flex  justify-self-center text-4xl font-bold my-2">
-          {formatTime(timerCount)}
-        </div>
-        <div className="flex justify-self-center space-x-3">
-          {BASE_TIME.map(({ label, time }) => (
-            <div key={label}>
-              <Button
-                onClick={() => minus(time)}
-                disabled={timerState === "active"}
-                variant="outline"
-                size="icon"
-              >
-                <ChevronDown />
-              </Button>
+            <div className="flex justify-center mt-4">
+              <Button onClick={stopSound}>Stop Alarm</Button>
             </div>
-          ))}
-        </div>
-        <div className="flex justify-center space-x-4 mt-4">
-          {timerState === "active" ? (
-            <Button onClick={stop}>stop</Button>
-          ) : (
-            <Button onClick={start}>start</Button>
-          )}
-          <Button onClick={reset}>reset</Button>
-        </div>
-        <div className="flex justify-center space-x-2">
-          <Button onClick={stopSound}>Stop Alarm</Button>
-        </div>
-      </Card>
+          </CardContent>
+        </Card>
+      </div>
     </div>
   );
 };

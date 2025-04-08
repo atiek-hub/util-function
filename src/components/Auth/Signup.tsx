@@ -1,17 +1,24 @@
-import { Form, FormControl, FormField, FormItem, FormLabel } from '@/shadcn-components/ui/form';
-import { Input } from '@/shadcn-components/ui/input';
-import { z } from 'zod';
-import { useForm } from 'react-hook-form';
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+} from "@/shadcn-components/ui/form";
+import { Input } from "@/shadcn-components/ui/input";
+import { z } from "zod";
+import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Button } from '@/shadcn-components/ui/button';
-import { supabase } from '@/lib/supabaseClient';
-import { createUser } from './api/users';
+import { Button } from "@/shadcn-components/ui/button";
+import { supabase } from "@/lib/supabaseClient";
+import { createUser } from "./api/users";
+import { Link } from "react-router-dom";
 
 export const Signup = () => {
   const userSchema = z.object({
     userName: z.string(),
     userEmail: z.string(),
-    userPassword: z.string()
+    userPassword: z.string(),
   });
 
   const form = useForm<z.infer<typeof userSchema>>({
@@ -19,24 +26,24 @@ export const Signup = () => {
   });
 
   const handleSignup = async (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault()
-    const { userName, userEmail, userPassword } = form.getValues()
+    event.preventDefault();
+    const { userName, userEmail, userPassword } = form.getValues();
     try {
       const { data, error } = await supabase.auth.signUp({
         email: userEmail,
-        password: userPassword
-      })
+        password: userPassword,
+      });
       if (error) throw new Error(error.message);
       const user_data = {
         id: data.user?.id,
         name: userName,
         email: userEmail,
-      }
-      await createUser(user_data)
+      };
+      await createUser(user_data);
     } catch (e) {
-      console.error(e)
+      console.error(e);
     }
-  }
+  };
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-gray-100">
@@ -55,10 +62,7 @@ export const Signup = () => {
                   <FormItem>
                     <FormLabel>Name</FormLabel>
                     <FormControl>
-                      <Input
-                        placeholder="title"
-                        {...field}
-                      />
+                      <Input placeholder="title" {...field} />
                     </FormControl>
                   </FormItem>
                 )}
@@ -70,11 +74,7 @@ export const Signup = () => {
                   <FormItem>
                     <FormLabel>Email address</FormLabel>
                     <FormControl>
-                      <Input
-                        type='email'
-                        placeholder="Email"
-                        {...field}
-                      />
+                      <Input type="email" placeholder="Email" {...field} />
                     </FormControl>
                   </FormItem>
                 )}
@@ -87,7 +87,7 @@ export const Signup = () => {
                     <FormLabel>Password</FormLabel>
                     <FormControl>
                       <Input
-                        type='password'
+                        type="password"
                         placeholder="password"
                         {...field}
                       />
@@ -95,13 +95,22 @@ export const Signup = () => {
                   </FormItem>
                 )}
               />
-              <Button type='submit' className="w-full">
+              <Button type="submit" className="w-full">
                 Sign Up
               </Button>
             </div>
           </form>
         </Form>
+        <p className="mt-4 text-center text-sm text-gray-600">
+          Already have an account?{" "}
+          <Link
+            to={"/signin"}
+            className="font-medium text-blue-600 hover:text-blue-500"
+          >
+            Sign in
+          </Link>
+        </p>
       </div>
     </div>
-  )
-}
+  );
+};

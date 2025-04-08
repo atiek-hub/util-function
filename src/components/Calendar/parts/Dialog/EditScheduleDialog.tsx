@@ -1,24 +1,17 @@
-import { Button } from "@/shadcn-components/ui/button";
 import { Card, CardContent } from "@/shadcn-components/ui/card";
 import {
   Dialog,
-  DialogClose,
   DialogContent,
+  DialogDescription,
   DialogHeader,
   DialogTitle,
 } from "@/shadcn-components/ui/dialog";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/shadcn-components/ui/dropdown-menu";
-import { Ellipsis, Pencil, X } from "lucide-react";
+import { Pencil } from "lucide-react";
 import { useState } from "react";
-import { EditScheduleDialogProps } from "../../types/dialog";
+import { EditScheduleDialogProps } from "../../../../types/dialog";
 import { ScheduleForm } from "../Form/ScheduleForm";
 import { ConfirmationDialog } from "./ConfirmationDialog";
+import { DropDownMenu } from "../DoropdownMenu/DropDownMenu";
 
 export const EditScheduleDialog = (props: EditScheduleDialogProps) => {
   const {
@@ -48,29 +41,37 @@ export const EditScheduleDialog = (props: EditScheduleDialogProps) => {
   const onClickEventDelete = () => {
     onDeleteEvent();
     setIsOpenDeleteDialog(false);
-    setIsOpenDialog(false)
+    setIsOpenDialog(false);
   };
-
-  const onClickEditSaveDialog = () => {
-    setIsOpenEditDialog(true)
-  }
 
   const onClickEventSave = () => {
     onEditEvent();
     setIsOpenDialog(false);
-    setIsOpenEditDialog(false)
+    setIsOpenEditDialog(false);
     setIsEditEvent(false);
   };
 
   const CustomDisplayDate = () => {
-    if (eventsStartDate?.getDate() === eventsEndDate?.getDate()) {
-      return format(eventsStartDate)
+    if (isAllDay) {
+      return `${format(eventsStartDate)} - ${format(eventsEndDate)}`;
+    } else {
+      if (eventsStartDate?.getDate() === eventsEndDate?.getDate()) {
+        return `${format(
+          eventsStartDate
+        )} ${eventsStartTime} - ${eventsEndTime}`;
+      } else {
+        return `${format(eventsStartDate)} ${eventsStartTime} - ${format(
+          eventsEndDate
+        )} ${eventsEndTime}`;
+      }
     }
-    else {
-      return `${format(eventsStartDate)}-${format(eventsEndDate)}`
-    }
-  }
+  };
 
+  const dropdownParam = [
+    { name: "複製", onClick: () => {} },
+    { name: "ヘルプ", onClick: () => {} },
+    { name: "削除", onClick: () => setIsOpenDeleteDialog(true) },
+  ];
   return (
     <div>
       <ConfirmationDialog
@@ -90,40 +91,28 @@ export const EditScheduleDialog = (props: EditScheduleDialogProps) => {
       <Dialog open={isOpenDialog} onOpenChange={setIsOpenDialog}>
         <DialogContent onInteractOutside={(e) => e.preventDefault()}>
           <DialogHeader>
-            <div className="flex justify-between align-center mb-3">
-              <DialogTitle>イベント</DialogTitle>
-              <DialogClose asChild onClick={() => setIsEditEvent(false)}>
-                <div className="flex space-x-1">
-                  <X className="h-4 w-4 my-auto" />
-                  <DialogTitle className="text-sm">閉じる</DialogTitle>
-                </div>
-              </DialogClose>
-            </div>
+            <DialogTitle className="flex items-center">
+              スケジュールの編集
+            </DialogTitle>
+            <DialogDescription>
+              <p className="text-sm text-gray-500">
+                スケジュールを編集するには、ペンのアイコンをクリックし、フォームに必要な情報を入力してください。
+              </p>
+            </DialogDescription>
             <div className="flex justify-end">
               <Pencil
-                onClick={() => setIsEditEvent(true)}
+                onClick={() => setIsEditEvent(isEditEvent ? false : true)}
                 className="cursor-pointer hover:text-gray-400 mx-2"
               />
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Ellipsis className="cursor-pointer hover:text-gray-400 mx-2" />
-                </DropdownMenuTrigger>
-                <DropdownMenuContent>
-                  <DropdownMenuSeparator />
-                  <DropdownMenuItem>複製</DropdownMenuItem>
-                  <DropdownMenuItem>ヘルプ</DropdownMenuItem>
-                  <DropdownMenuItem onClick={() => setIsOpenDeleteDialog(true)}>
-                    削除
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
+              <DropDownMenu dropdownParam={dropdownParam} />
             </div>
           </DialogHeader>
           <Card>
-            <CardContent >
+            <CardContent>
               {isEditEvent ? (
                 <div className="mt-2">
                   <ScheduleForm
+                    clickEvent={() => setIsOpenEditDialog(true)}
                     allDay={{ isAllDay, setIsAllDay }}
                     title={{ eventsTitle, setEventsTitle }}
                     startDate={{ eventsStartDate, setEventsStartDate }}
@@ -132,18 +121,11 @@ export const EditScheduleDialog = (props: EditScheduleDialogProps) => {
                     endTime={{ eventsEndTime, setEventsEndTime }}
                     format={format}
                   />
-                  <div className="mt-3 flex justify-evenly">
-                    <Button onClick={onClickEditSaveDialog}>保存</Button>
-                    <DialogClose asChild onClick={() => setIsEditEvent(false)}>
-                      <Button>キャンセル</Button>
-                    </DialogClose>
-                  </div>
                 </div>
               ) : (
                 <div className="mt-2">
                   <div className="text-xl">{eventsTitle}</div>
                   <div>{CustomDisplayDate()}</div>
-                  <div>{eventsStartTime}-{eventsEndTime}</div>
                 </div>
               )}
             </CardContent>

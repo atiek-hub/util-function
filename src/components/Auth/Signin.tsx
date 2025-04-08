@@ -1,16 +1,22 @@
-import { Form, FormControl, FormField, FormItem, FormLabel } from '@/shadcn-components/ui/form';
-import { Input } from '@/shadcn-components/ui/input';
-import { z } from 'zod';
-import { useForm } from 'react-hook-form';
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+} from "@/shadcn-components/ui/form";
+import { Input } from "@/shadcn-components/ui/input";
+import { z } from "zod";
+import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Button } from '@/shadcn-components/ui/button';
-import { supabase } from '@/lib/supabaseClient';
-import { useNavigate } from 'react-router-dom';
+import { Button } from "@/shadcn-components/ui/button";
+import { supabase } from "@/lib/supabaseClient";
+import { Link, useNavigate } from "react-router-dom";
 
 export const Signin = () => {
   const userSchema = z.object({
     userEmail: z.string(),
-    userPassword: z.string()
+    userPassword: z.string(),
   });
 
   const form = useForm<z.infer<typeof userSchema>>({
@@ -20,19 +26,19 @@ export const Signin = () => {
   const navigate = useNavigate();
 
   const handleSignin = async (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault()
-    const { userEmail, userPassword } = form.getValues()
+    event.preventDefault();
+    const { userEmail, userPassword } = form.getValues();
     try {
       const { error } = await supabase.auth.signInWithPassword({
         email: userEmail,
-        password: userPassword
-      })
-      if (error) throw new Error(error.message)
-      navigate('/');
+        password: userPassword,
+      });
+      if (error) throw new Error(error.message);
+      navigate("/");
     } catch (e) {
-      console.error("Login Error", e)
+      console.error("Login Error", e);
     }
-  }
+  };
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-gray-100">
@@ -50,11 +56,7 @@ export const Signin = () => {
                   <FormItem>
                     <FormLabel>Email address</FormLabel>
                     <FormControl>
-                      <Input
-                        type='email'
-                        placeholder="Email"
-                        {...field}
-                      />
+                      <Input type="email" placeholder="Email" {...field} />
                     </FormControl>
                   </FormItem>
                 )}
@@ -67,7 +69,7 @@ export const Signin = () => {
                     <FormLabel>Password</FormLabel>
                     <FormControl>
                       <Input
-                        type='password'
+                        type="password"
                         placeholder="password"
                         {...field}
                       />
@@ -75,13 +77,22 @@ export const Signin = () => {
                   </FormItem>
                 )}
               />
-              <Button type='submit' className="w-full">
+              <Button type="submit" className="w-full">
                 Sign In
               </Button>
             </div>
           </form>
         </Form>
+        <p className="mt-4 text-center text-sm text-gray-600">
+          Don't have an account?{" "}
+          <Link
+            to={"/signup"}
+            className="font-medium text-blue-600 hover:text-blue-500"
+          >
+            Sign up
+          </Link>
+        </p>
       </div>
     </div>
-  )
-}
+  );
+};

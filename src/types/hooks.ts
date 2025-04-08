@@ -1,6 +1,7 @@
 export type MyEventsType = {
-  id: string;
+  id?: string;
   title: string;
+  allDay: boolean;
   start: Date | undefined;
   end: Date | undefined;
 };
