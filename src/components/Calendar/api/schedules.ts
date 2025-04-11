@@ -2,10 +2,13 @@ import { MyEventsType } from "../../../types/hooks";
 
 export const getAllSchedules = async (userId: string) => {
   try {
-    const response = await fetch(`http://localhost:3000/schedules/${userId}`, {
-      mode: "cors",
-      method: "GET",
-    });
+    const response = await fetch(
+      `${process.env.VITE_API_URL}/schedules/${userId}`,
+      {
+        mode: "cors",
+        method: "GET",
+      }
+    );
     const data = await response.json();
     return data;
   } catch (e) {
@@ -15,10 +18,13 @@ export const getAllSchedules = async (userId: string) => {
 
 export const getSchedule = async (id: string) => {
   try {
-    const response = await fetch(`http://localhost:3000/schedules/${id}`, {
-      mode: "cors",
-      method: "GET",
-    });
+    const response = await fetch(
+      `${process.env.VITE_API_URL}/schedules/${id}`,
+      {
+        mode: "cors",
+        method: "GET",
+      }
+    );
     const data = await response.json();
     return data;
   } catch (e) {
@@ -39,7 +45,7 @@ export const createSchedule = async (schedule: MyEventsType) => {
     },
   };
   try {
-    const response = await fetch("http://localhost:3000/schedules", {
+    const response = await fetch(`${process.env.VITE_API_URL}/schedules`, {
       mode: "cors",
       method: "POST",
       headers: {
@@ -56,10 +62,13 @@ export const createSchedule = async (schedule: MyEventsType) => {
 
 export const deleteSchedule = async (id: string) => {
   try {
-    const response = await fetch(`http://localhost:3000/schedules/${id}`, {
-      mode: "cors",
-      method: "DELETE",
-    });
+    const response = await fetch(
+      `${process.env.VITE_API_URL}/schedules/${id}`,
+      {
+        mode: "cors",
+        method: "DELETE",
+      }
+    );
     const data = await response.json();
     return data;
   } catch (e) {
@@ -69,14 +78,17 @@ export const deleteSchedule = async (id: string) => {
 
 export const updateSchedule = async (id: string, schedule: MyEventsType) => {
   try {
-    const response = await fetch(`http://localhost:3000/schedules/${id}`, {
-      mode: "cors",
-      method: "PATCH",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(schedule),
-    });
+    const response = await fetch(
+      `${process.env.VITE_API_URL}/schedules/${id}`,
+      {
+        mode: "cors",
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(schedule),
+      }
+    );
     const data = await response.json();
     return data;
   } catch (e) {
@@ -86,7 +98,7 @@ export const updateSchedule = async (id: string, schedule: MyEventsType) => {
 
 export const getUser = async (id: string) => {
   try {
-    const response = await fetch(`http://localhost:3000/users/${id}`, {
+    const response = await fetch(`${process.env.VITE_API_URL}/users/${id}`, {
       method: "GET",
     });
     const data = await response.json();
