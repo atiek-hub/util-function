@@ -7,11 +7,13 @@ import {
   DialogTitle,
 } from "@/shadcn-components/ui/dialog";
 import { Pencil } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { EditScheduleDialogProps } from "../../../../types/dialog";
 import { ScheduleForm } from "../Form/ScheduleForm";
 import { ConfirmationDialog } from "./ConfirmationDialog";
 import { DropDownMenu } from "../DoropdownMenu/DropDownMenu";
+import { format as formt_fns } from "date-fns";
+import { MyEventsType } from "@/types/hooks";
 
 export const EditScheduleDialog = (props: EditScheduleDialogProps) => {
   const {
@@ -25,6 +27,9 @@ export const EditScheduleDialog = (props: EditScheduleDialogProps) => {
     format,
     onEditEvent,
     onDeleteEvent,
+    eventsId,
+    events,
+    edit,
   } = props;
 
   const { isOpenDialog, setIsOpenDialog } = open;
@@ -34,9 +39,11 @@ export const EditScheduleDialog = (props: EditScheduleDialogProps) => {
   const { eventsStartTime, setEventsStartTime } = startTime;
   const { eventsEndDate, setEventsEndDate } = endDate;
   const { eventsEndTime, setEventsEndTime } = endTime;
+  const { myEvents } = events;
+  const { isEditEvent, setIsEditEvent } = edit;
   const [isOpenDeleteDialog, setIsOpenDeleteDialog] = useState<boolean>(false);
   const [isOpenEditDialog, setIsOpenEditDialog] = useState<boolean>(false);
-  const [isEditEvent, setIsEditEvent] = useState<boolean>(false);
+  const [scheduleData, setScheduleData] = useState<MyEventsType>();
 
   const onClickEventDelete = () => {
     onDeleteEvent();
@@ -51,18 +58,19 @@ export const EditScheduleDialog = (props: EditScheduleDialogProps) => {
     setIsEditEvent(false);
   };
 
-  const CustomDisplayDate = () => {
-    if (isAllDay) {
-      return `${format(eventsStartDate)} - ${format(eventsEndDate)}`;
+  const CustomDisplayDate = (data: MyEventsType) => {
+    if (data.start === undefined || data.end === undefined) return;
+    const start = new Date(data.start);
+    const end = new Date(data.end);
+    const start_time = formt_fns(start, "HH:mm");
+    const end_time = formt_fns(end, "HH:mm");
+    if (data.allDay) {
+      return `${format(start)} - ${format(end)}`;
     } else {
-      if (eventsStartDate?.getDate() === eventsEndDate?.getDate()) {
-        return `${format(
-          eventsStartDate
-        )} ${eventsStartTime} - ${eventsEndTime}`;
+      if (start.getDate() === end.getDate()) {
+        return `${format(start)} ${start_time} - ${end_time}`;
       } else {
-        return `${format(eventsStartDate)} ${eventsStartTime} - ${format(
-          eventsEndDate
-        )} ${eventsEndTime}`;
+        return `${format(start)} ${start_time} - ${format(end)} ${end_time}`;
       }
     }
   };
@@ -72,6 +80,20 @@ export const EditScheduleDialog = (props: EditScheduleDialogProps) => {
     { name: "ヘルプ", onClick: () => {} },
     { name: "削除", onClick: () => setIsOpenDeleteDialog(true) },
   ];
+
+  useEffect(() => {
+    const getSchedule = () => {
+      const schedule = myEvents.find(
+        (event: MyEventsType) => Number(event.id) === Number(eventsId)
+      );
+      if (schedule) {
+        setScheduleData(schedule);
+      }
+      return null;
+    };
+    getSchedule();
+  }, [eventsId, myEvents]);
+
   return (
     <div>
       <ConfirmationDialog
@@ -123,9 +145,13 @@ export const EditScheduleDialog = (props: EditScheduleDialogProps) => {
                   />
                 </div>
               ) : (
-                <div className="mt-2">
-                  <div className="text-xl">{eventsTitle}</div>
-                  <div>{CustomDisplayDate()}</div>
+                <div>
+                  {scheduleData ? (
+                    <div className="mt-2">
+                      <div className="text-xl">{scheduleData.title}</div>
+                      <div>{CustomDisplayDate(scheduleData)}</div>
+                    </div>
+                  ) : null}
                 </div>
               )}
             </CardContent>

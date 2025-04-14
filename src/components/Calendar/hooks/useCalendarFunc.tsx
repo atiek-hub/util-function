@@ -22,10 +22,12 @@ export const useCalendarFunc = () => {
   const [myEvents, setMyEvents] = useState<MyEventsType[]>([]);
   const [isOpenDialog, setIsOpenDialog] = useState<boolean>(false);
   const [isOpenSheet, setIsOpenSheet] = useState<boolean>(false);
+  const [isEditEvent, setIsEditEvent] = useState<boolean>(false); // 編集モードの切り替え
 
   //追加済みのイベントをクリックした時
   const handleClick = (addedInfo: EventClickArg) => {
     const { id, title, start, end, allDay } = addedInfo.event;
+    setIsEditEvent(false);
     setEventsId(id);
     setEventsTitle(title);
     setIsAllDay(allDay);
@@ -58,13 +60,8 @@ export const useCalendarFunc = () => {
     if (!eventsStartDate || !eventsEndDate) {
       return;
     }
-    setEventTitme(eventsStartDate, eventsStartTime);
-    setEventTitme(eventsEndDate, eventsEndTime);
-
-    if (eventsStartDate >= eventsEndDate) {
-      alert("開始時間と終了時間を確認してください");
-      return;
-    }
+    setEventTime(eventsStartDate, eventsStartTime);
+    setEventTime(eventsEndDate, eventsEndTime);
 
     const {
       data: { user },
@@ -88,18 +85,9 @@ export const useCalendarFunc = () => {
     if (!eventsStartDate || !eventsEndDate) {
       return;
     }
-    setEventTitme(eventsStartDate, eventsStartTime);
-    setEventTitme(eventsEndDate, eventsEndTime);
-    if (eventsStartDate >= eventsEndDate) {
-      alert("開始時間と終了時間を確認してください");
-      return;
-    }
-    const [sh, sm] = eventsStartTime.split(":").map(Number);
-    const [eh, em] = eventsEndTime.split(":").map(Number);
-    eventsStartDate!.setHours(sh);
-    eventsStartDate!.setMinutes(sm);
-    eventsEndDate!.setHours(eh);
-    eventsEndDate!.setMinutes(em);
+    setEventTime(eventsStartDate, eventsStartTime);
+    setEventTime(eventsEndDate, eventsEndTime);
+
     const data = {
       title: eventsTitle,
       allDay: isAllDay,
@@ -144,7 +132,7 @@ export const useCalendarFunc = () => {
     return `${day}(${dayArr[date.getDay()]})`;
   };
   //時間をセットする関数
-  const setEventTitme = (eventDate: Date, timeString: string) => {
+  const setEventTime = (eventDate: Date, timeString: string) => {
     const [hours, minutes] = timeString.split(":").map(Number);
     eventDate.setHours(hours);
     eventDate.setMinutes(minutes);
@@ -177,5 +165,7 @@ export const useCalendarFunc = () => {
     setIsOpenSheet,
     isOpenDialog,
     setIsOpenDialog,
+    isEditEvent,
+    setIsEditEvent,
   };
 };

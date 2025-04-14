@@ -12,7 +12,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Button } from "@/shadcn-components/ui/button";
 import { supabase } from "@/lib/supabaseClient";
 import { createUser } from "./api/users";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 export const Signup = () => {
   const userSchema = z.object({
@@ -24,6 +24,8 @@ export const Signup = () => {
   const form = useForm<z.infer<typeof userSchema>>({
     resolver: zodResolver(userSchema),
   });
+
+  const navigate = useNavigate();
 
   const handleSignup = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -43,6 +45,7 @@ export const Signup = () => {
         email: userEmail,
       };
       await createUser(user_data);
+      navigate("/");
     } catch (e) {
       console.error(e);
     }
