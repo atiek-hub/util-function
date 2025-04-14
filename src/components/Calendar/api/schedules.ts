@@ -19,7 +19,7 @@ export const getAllSchedules = async (userId: string) => {
 export const getSchedule = async (id: string) => {
   try {
     const response = await fetch(
-      `${process.env.VITE_API_URL}/schedules/${id}`,
+      `${process.env.VITE_API_URL}/schedules/schedule/${id}`,
       {
         mode: "cors",
         method: "GET",

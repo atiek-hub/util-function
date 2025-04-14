@@ -1,4 +1,5 @@
 import { Dispatch, ReactNode, SetStateAction } from "react";
+import { MyEventsType } from "./hooks";
 
 export type SetScheduleSheetProps = {
   open: {
@@ -40,6 +41,15 @@ export type EditScheduleDialogProps = {
   format: (date: Date | undefined) => string | undefined;
   onEditEvent: () => void;
   onDeleteEvent: () => void;
+  eventsId: string;
+  events: {
+    myEvents: MyEventsType[];
+    setMyEvents: Dispatch<SetStateAction<MyEventsType[]>>;
+  };
+  edit: {
+    isEditEvent: boolean;
+    setIsEditEvent: Dispatch<SetStateAction<boolean>>;
+  };
 };
 
 export type ConfirmationDialogProps = {

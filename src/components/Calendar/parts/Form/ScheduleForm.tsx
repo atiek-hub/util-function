@@ -35,22 +35,42 @@ export const ScheduleForm = (props: ScheduleFormProps) => {
   const { eventsEndDate, setEventsEndDate } = endDate;
   const { eventsEndTime, setEventsEndTime } = endTime;
 
-  const scheduleSchema = z.object({
-    title: z
-      .string()
-      .min(1, { message: "Title must be at least 1 characters." }),
-    all_day: z.boolean().default(false).optional(),
-    start_date: z.date({
-      required_error: "A date of start schedule is required.",
-    }),
-    start_time: z
-      .string()
-      .min(4, { message: "A time of start schedule is required" }),
-    end_date: z.date({ required_error: "A date of end schedule is required." }),
-    end_time: z
-      .string()
-      .min(4, { message: "A time of end schedule is required" }),
-  });
+  const scheduleSchema = z
+    .object({
+      title: z
+        .string()
+        .min(1, { message: "Title must be at least 1 characters." }),
+      all_day: z.boolean().default(false).optional(),
+      start_date: z.date({
+        required_error: "A date of start schedule is required.",
+      }),
+      start_time: z
+        .string()
+        .min(4, { message: "A time of start schedule is required" }),
+      end_date: z.date({
+        required_error: "A date of end schedule is required.",
+      }),
+      end_time: z
+        .string()
+        .min(4, { message: "A time of end schedule is required" }),
+    })
+    .refine(
+      // 開始日時が終了日時よりも後になっている場合または、一緒の場合エラーを出す
+      (data) => {
+        const { start_date, end_date, start_time, end_time } = data;
+        const [s_hours, s_minutes] = start_time.split(":").map(Number);
+        const [e_hours, e_minutes] = end_time.split(":").map(Number);
+        start_date.setHours(s_hours);
+        end_date.setHours(e_hours);
+        start_date.setMinutes(s_minutes);
+        end_date.setMinutes(e_minutes);
+        return start_date < end_date;
+      },
+      {
+        message: "開始日、または終了日を確認してください",
+        path: ["end_date"],
+      }
+    );
 
   const form = useForm<z.infer<typeof scheduleSchema>>({
     resolver: zodResolver(scheduleSchema),

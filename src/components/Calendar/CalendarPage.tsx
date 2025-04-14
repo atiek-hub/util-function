@@ -13,6 +13,7 @@ import { Header } from "../Header/header";
 export const CalendarPage = () => {
   const {
     ref,
+    eventsId,
     eventsTitle,
     setEventsTitle,
     isAllDay,
@@ -37,6 +38,8 @@ export const CalendarPage = () => {
     setIsOpenSheet,
     isOpenDialog,
     setIsOpenDialog,
+    isEditEvent,
+    setIsEditEvent,
   } = useCalendarFunc();
 
   useEffect(() => {
@@ -81,6 +84,9 @@ export const CalendarPage = () => {
         format={formatCaption}
         onEditEvent={onEditEvent}
         onDeleteEvent={onDeleteEvent}
+        eventsId={eventsId}
+        events={{ myEvents, setMyEvents }}
+        edit={{ isEditEvent, setIsEditEvent }}
       />
       <div>
         <Header />
